@@ -49,7 +49,7 @@ func (mb *client) ReadCoils(address, quantity uint16) (results []byte, err error
 	}
 	response, err := mb.send(&request)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("send error: %w", err)
 	}
 	count := int(response.Data[0])
 	length := len(response.Data) - 1
@@ -442,14 +442,14 @@ func (mb *client) send(request *ProtocolDataUnit) (response *ProtocolDataUnit, e
 	}
 	aduResponse, err := mb.transporter.Send(aduRequest)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("transporter.Send error: %w", err)
 	}
 	if err = mb.packager.Verify(aduRequest, aduResponse); err != nil {
-		return
+		return nil, fmt.Errorf("packager.Verify error: %w", err)
 	}
 	response, err = mb.packager.Decode(aduResponse)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("packager.Decode error: %w", err)
 	}
 	// Check correct function code returned (exception)
 	if response.FunctionCode != request.FunctionCode {

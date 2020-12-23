@@ -6,6 +6,7 @@ package modbus
 
 import (
 	"encoding/binary"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"time"
@@ -81,7 +82,7 @@ func (mb *rtuPackager) Verify(aduRequest []byte, aduResponse []byte) (err error)
 	}
 	// Slave address must match
 	if aduResponse[0] != aduRequest[0] {
-		err = fmt.Errorf("modbus: response slave id '%v' does not match request '%v'", aduResponse[0], aduRequest[0])
+		err = fmt.Errorf("modbus: response slave id '%v' does not match request '%v'; full response (%d bytes): 0x%s", aduResponse[0], aduRequest[0], len(aduResponse), hex.EncodeToString(aduResponse))
 		return
 	}
 	return
